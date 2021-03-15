@@ -106,6 +106,7 @@
 
  int main(int argc, char *argv[])
  {
+  
    
    //initialize
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
@@ -193,6 +194,10 @@
     char audioStr[9];
     snprintf(audioStr, 9, "[A]udio:");
 
+    //version string
+    char version[13];
+    snprintf(version, 13, "Version: 1.1");
+
     
     
     
@@ -238,6 +243,7 @@
     SDL_Surface* surfAudio = TTF_RenderText_Solid(font, audioStr, Red);
     SDL_Surface* surfOnText = TTF_RenderText_Solid(font, OnStr, Red);
     SDL_Surface* surfOffText = TTF_RenderText_Solid(font, OffStr, Red);
+    SDL_Surface* surfVersion = TTF_RenderText_Solid(font, version, Red);
     
 
     
@@ -283,6 +289,7 @@
     SDL_Texture* texAudio = SDL_CreateTextureFromSurface(rend, surfAudio);
     SDL_Texture* texOnText = SDL_CreateTextureFromSurface(rend, surfOnText);
     SDL_Texture* texOffText = SDL_CreateTextureFromSurface(rend, surfOffText);
+    SDL_Texture* texVersion = SDL_CreateTextureFromSurface(rend, surfVersion);
 
     //free Surfaces
     SDL_FreeSurface(surfCar);
@@ -324,6 +331,7 @@
     SDL_FreeSurface(surfAudio);
     SDL_FreeSurface(surfOnText);
     SDL_FreeSurface(surfOffText);
+    SDL_FreeSurface(surfVersion);
     
     
 
@@ -363,6 +371,8 @@
 
     SDL_Rect destAudio;
     SDL_Rect destAudioStatus;
+
+    SDL_Rect destVersion;
 
     
 
@@ -547,6 +557,12 @@
 
     destAudioStatus.x = destAudio.x + (destAudio.w + 30);
     destAudioStatus.y = destAudio.y+(destAudio.h/2);
+
+    destVersion.w = 60;
+    destVersion.h = 20;
+
+    destVersion.x = (WINDOW_WIDTH/2) - (destVersion.w/2);
+    destVersion.y = WINDOW_HEIGHT - destVersion.h;
 
     //set up music for menu
     bgMusic = Mix_LoadMUS("Content/Audio/MenuMusic.mp3");
@@ -1282,6 +1298,7 @@
           {
              get_and_update_hud(highScore, rend, font, Red, 5, 220, 190, 200, 50); 
           }
+          SDL_RenderCopy(rend, texVersion, NULL, &destVersion);
         }
         else if(subMenu == 2)
         {
@@ -1704,14 +1721,14 @@
         if(Background[0].y > WINDOW_HEIGHT)
           {
             srand(time(0));
-            Background[0].y = WINDOW_HEIGHT - (Background[0].h*2) + ((Background[0].y - WINDOW_HEIGHT) * 2);
+            Background[0].y = Background[1].y - Background[0].h;//WINDOW_HEIGHT - (Background[0].h*2) + ((Background[0].y - WINDOW_HEIGHT) * 2);
             randBack1 = rand() % 5;
           
           }
         if(Background[1].y > WINDOW_HEIGHT)
           {
             srand(time(0));
-            Background[1].y = WINDOW_HEIGHT - (Background[1].h*2) + ((Background[1].y - WINDOW_HEIGHT) * 2);
+            Background[1].y = Background[0].y - Background[1].h;//WINDOW_HEIGHT - (Background[1].h*2) + ((Background[1].y - WINDOW_HEIGHT) * 2);
             randBack2 = rand() % 5;
           
           }
@@ -2330,6 +2347,7 @@
         //handle player when health is -
         if(playerHealth <= 0)
         {
+          playerHealth = 0;
           if(score > highScore)
           {
             highScore = score;
@@ -2652,6 +2670,7 @@
     SDL_DestroyTexture(texAudio);
     SDL_DestroyTexture(texOnText);
     SDL_DestroyTexture(texOffText);
+    SDL_DestroyTexture(texVersion);
     TTF_CloseFont(font);
     Mix_FreeChunk(sndBulletCollide);
     Mix_FreeChunk(sndPlayerBullet);
